@@ -1,4 +1,4 @@
-# Java Room Database with Camera
+# Java Room Database with CameraX
 ```
 Java Room Database
 CameraX 
