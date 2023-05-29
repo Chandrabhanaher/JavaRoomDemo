@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <EditText
+        android:id="@+id/editTextTextSchoolName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="School Name"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextTextUniName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="University Name"
+        app:layout_constraintEnd_toEndOf="@+id/editTextTextSchoolName"
+        app:layout_constraintStart_toStartOf="@+id/editTextTextSchoolName"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextSchoolName" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Submit"
+        app:layout_constraintEnd_toEndOf="@+id/editTextTextUniName"
+        app:layout_constraintStart_toStartOf="@+id/editTextTextUniName"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextUniName" />
+
+    <EditText
+        android:id="@+id/txtVNam"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="Enter Vehicle Name"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="@+id/textView"
+        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Vehicle Data"
+        app:layout_constraintEnd_toEndOf="@+id/button"
+        app:layout_constraintStart_toStartOf="@+id/button"
+        app:layout_constraintTop_toBottomOf="@+id/button" />
+
+    <EditText
+        android:id="@+id/txtKilometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="Enter Kilometer"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="@+id/txtVNam"
+        app:layout_constraintStart_toStartOf="@+id/txtVNam"
+        app:layout_constraintTop_toBottomOf="@+id/txtVNam" />
+
+    <Button
+        android:id="@+id/btnVehicle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vehicle Submit"
+        app:layout_constraintEnd_toEndOf="@+id/txtKilometer"
+        app:layout_constraintStart_toStartOf="@+id/txtKilometer"
+        app:layout_constraintTop_toBottomOf="@+id/txtKilometer" />
+
+    <Button
+        android:id="@+id/btnCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Camera View"
+        app:layout_constraintEnd_toEndOf="@+id/btnVehicle"
+        app:layout_constraintStart_toStartOf="@+id/btnVehicle"
+        app:layout_constraintTop_toBottomOf="@+id/btnVehicle" />
+
+    <Button
+        android:id="@+id/takePicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Take Picture"
+        app:layout_constraintEnd_toEndOf="@+id/btnCamera"
+        app:layout_constraintStart_toStartOf="@+id/btnCamera"
+        app:layout_constraintTop_toBottomOf="@+id/btnCamera" />
+
+    <Button
+        android:id="@+id/takeKotlinePicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Kotlin Take Photo"
+        app:layout_constraintEnd_toEndOf="@+id/takePicture"
+        app:layout_constraintStart_toStartOf="@+id/takePicture"
+        app:layout_constraintTop_toBottomOf="@+id/takePicture" />
+
+    <Button
+        android:id="@+id/btnCamera2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Camera2API"
+        app:layout_constraintEnd_toEndOf="@+id/takeKotlinePicture"
+        app:layout_constraintStart_toStartOf="@+id/takeKotlinePicture"
+        app:layout_constraintTop_toBottomOf="@+id/takeKotlinePicture" />
+
+    <Button
+        android:id="@+id/btnPopup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Show Popup"
+        app:layout_constraintEnd_toEndOf="@+id/btnCamera2"
+        app:layout_constraintStart_toStartOf="@+id/btnCamera2"
+        app:layout_constraintTop_toBottomOf="@+id/btnCamera2" />
+</androidx.constraintlayout.widget.ConstraintLayout>
