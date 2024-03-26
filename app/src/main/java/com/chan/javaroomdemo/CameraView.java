@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -105,11 +106,15 @@ public class CameraView extends AppCompatActivity implements View.OnClickListene
 
         imageCapture = new ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).build();
 
-        videoCapture = new VideoCapture.Builder().setVideoFrameRate(30).build();
+        videoCapture = new VideoCapture.Builder().setVideoFrameRate(30)
+                /*.setBitRate(480000)
+                .setAudioBitRate(70000)
+                .setAudioChannelCount(1)*/
+                .build();
 
         imageAnalysis = new ImageAnalysis.Builder().setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build();
 
-        cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, imageCapture, imageAnalysis);
+        cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, imageCapture, videoCapture);
     }
 
     @SuppressLint("RestrictedApi")
@@ -134,45 +139,69 @@ public class CameraView extends AppCompatActivity implements View.OnClickListene
     @SuppressLint("RestrictedApi")
     private void recordVideo() {
         if (videoCapture != null) {
-            File photoDir = new File("/mnt/sdcard/Movies/CameraXPhoto");
-            if (!photoDir.exists())
-                photoDir.mkdir();
 
-            Date date = new Date();
-            String timeStamp = String.valueOf(date.getTime());
-            String photoFilePath = photoDir.getAbsolutePath() + "/" + timeStamp + ".mp4";
+/*
+            long timeStamp = System.currentTimeMillis();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, timeStamp);
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");*/
+            String videoFilePath = getFileVideoPath();
 
-            File photoFile = new File(photoFilePath);
+            File photoFile = new File(videoFilePath);
+            if (!photoFile.exists()){
+                photoFile.mkdirs();
+            }
+
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
 
             videoCapture.startRecording(
-                    new VideoCapture.OutputFileOptions.Builder(photoFile).build(), executor,
+                    new VideoCapture.OutputFileOptions.Builder(photoFile).build(), getExecutor(),
                     new VideoCapture.OnVideoSavedCallback() {
                         @Override
                         public void onVideoSaved(@NonNull VideoCapture.OutputFileResults outputFileResults) {
-                            Log.e("IMAGE_PATH", outputFileResults.toString());
-                            Toast.makeText(CameraView.this, "Video has been saved successfully", Toast.LENGTH_LONG).show();
+                            runOnUiThread(() -> {
+                                String path = String.valueOf(outputFileResults.getSavedUri());
+                                Log.e("IMAGE_PATH", photoFile.getPath() + "Path : "+path);
+                                startActivity(new Intent(CameraView.this, FullImage.class)
+                                        .putExtra("video", path));
+                                Toast.makeText(CameraView.this, "Video has been saved successfully", Toast.LENGTH_LONG).show();
+                            });
                         }
 
                         @Override
                         public void onError(int videoCaptureError, @NonNull String message, @Nullable Throwable cause) {
-                            Toast.makeText(CameraView.this, message, Toast.LENGTH_LONG).show();
+                            runOnUiThread(() -> {
+                                Toast.makeText(CameraView.this, message, Toast.LENGTH_LONG).show();
+                                Log.e("IMAGE_PATH", message);
+                            });
                         }
                     }
             );
         }
     }
 
+    private String getFileVideoPath() {
+
+        Date date = new Date();
+        String timeStamp = String.valueOf(date.getTime());
+        String imageFileName = "VIDEO_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+
+        try {
+            storageDir = File.createTempFile(imageFileName, ".mp4", storageDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Objects.requireNonNull(storageDir).getAbsolutePath();
+    }
+
     private void capturePhoto() {
 
         String photoFilePath = getFilePath();
-
-
         File photoFile = new File(photoFilePath);//Environment.getExternalStorageDirectory() + "/" + UUID.randomUUID().toString() + ".jpg");
-
 
         if (!photoFile.exists())
             photoFile.mkdirs();

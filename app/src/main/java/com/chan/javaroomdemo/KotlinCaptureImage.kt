@@ -51,7 +51,7 @@ class KotlinCaptureImage : AppCompatActivity() {
     private fun intiActivityLauncher() {
         activityResultLauncher  = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){result ->
             if(result != null && result.resultCode == RESULT_OK){
-                val data = result.data;
+                val data = result.data
                 if(data != null){
 
                     try {
