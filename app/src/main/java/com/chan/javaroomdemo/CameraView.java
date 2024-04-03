@@ -152,7 +152,6 @@ public class CameraView extends AppCompatActivity implements View.OnClickListene
                 photoFile.mkdirs();
             }
 
-
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
