@@ -6,7 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
+import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.CameraX;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.VideoCapture;
@@ -46,23 +48,27 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
+@SuppressLint("RestrictedApi")
 public class CameraView extends AppCompatActivity implements View.OnClickListener, ImageAnalysis.Analyzer {
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFeature;
     private Button btnTakePic, btnStartRecord;
     private PreviewView cameraPreviewView;
     private ImageCapture imageCapture;
+
     private VideoCapture videoCapture;
     private ImageAnalysis imageAnalysis;
     private Executor executor = Executors.newSingleThreadExecutor();
+    CameraSelector cameraSelector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,9 +106,14 @@ public class CameraView extends AppCompatActivity implements View.OnClickListene
         Preview preview = new Preview.Builder().build();
         preview.setSurfaceProvider(cameraPreviewView.getSurfaceProvider());
 
-        CameraSelector cameraSelector = new CameraSelector.Builder()
+        List<CameraInfo> availableCameraInfos = cameraProvider.getAvailableCameraInfos();
+
+        Log.e("All_CAMERA", "[startCamera] available cameras:"+ Arrays.toString(availableCameraInfos.toArray()));
+
+        /*CameraSelector cameraSelector = new CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                .build();
+                .build();*/
+        cameraSelector = availableCameraInfos.get(1).getCameraSelector();
 
         imageCapture = new ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).build();
 
