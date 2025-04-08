@@ -7,16 +7,22 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.chan.javaroomdemo.db.AddDBViewModel;
 import com.chan.javaroomdemo.db.School;
 import com.chan.javaroomdemo.db.Vehicle;
+import com.chan.javaroomdemo.network.ApiService;
+import com.chan.javaroomdemo.network.RetrofitClient;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
@@ -29,6 +35,16 @@ import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.tasks.OnCompleteListener;
 import com.google.android.play.core.tasks.OnSuccessListener;
 import com.google.android.play.core.tasks.Task;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -62,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         Button takePicture = findViewById(R.id.takePicture);
         Button KotlinTackPicture = findViewById(R.id.takeKotlinePicture);
         Button btnCamera2 = findViewById(R.id.btnCamera2);
+        Button btnDownloadImg = findViewById(R.id.btnDownloadImg);
 
         btnSubmit.setOnClickListener(v -> {
             String name = txtSchoolName.getText().toString();
@@ -100,6 +117,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, CameraView.class));
         });
 
+        btnDownloadImg.setOnClickListener(v->{
+            downloadUrlImage();
+        });
 
         EditText txtVName = findViewById(R.id.txtVNam);
         EditText txtKilometer = findViewById(R.id.txtKilometer);
@@ -123,6 +143,51 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private void downloadUrlImage() {
+
+         RetrofitClient.getApiService().downloadImage()
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                        if (response.isSuccessful()) {
+                            new Thread(() -> {
+                                try {
+
+                                    InputStream inputStream = response.body().byteStream();
+                                    File fileDir= new File(getFilesDir().toString() + "test");
+                                    fileDir.mkdirs();
+                                    File imageFile = new File(fileDir,"/test.jpg");
+                                    try (FileOutputStream fileOutputStream = new FileOutputStream(imageFile)) {
+                                        byte[] buffer = new byte[4096];
+                                        int byteRead;
+                                        while ((byteRead = inputStream.read(buffer)) != -1) {
+                                            fileOutputStream.write(buffer, 0, byteRead);
+                                        }
+                                    }
+                                    runOnUiThread(() -> {
+                                        Log.e("IMAGE_LOAD", "Image Path : " + imageFile.getAbsolutePath());
+                                        Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+                                        ImageView imageView = findViewById(R.id.imageView);
+                                        imageView.setImageBitmap(bitmap);
+                                        Toast.makeText(MainActivity.this, "Image saved!", Toast.LENGTH_SHORT).show();
+                                    });
+
+                                } catch (Exception e) {
+                                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to save image", Toast.LENGTH_LONG).show());
+                                }
+                            }).start();
+                        } else {
+                            Toast.makeText(MainActivity.this, "Failed to download image", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                        Log.e("IMAGE_LOAD", t.getMessage());
+                    }
+                });
     }
 
     private void inAppUpdate() {
